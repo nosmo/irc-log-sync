@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 
 """Backup a remote irc session's logdir to a local computer.
 
@@ -11,18 +11,16 @@ mid-sync).
 
 """
 
-import os
-import tempfile
-import subprocess
+import argparse
 import datetime
 import glob
+import json
+import os
+import subprocess
+import tempfile
 
-USER="nosmo"
-HOST="fulltimeinter.net"
-BACKUP_ROOT="/Users/nosmo/Backups/irclogs/logs"
-
-"""Behaviour for when a network name ends with a "2", usually
-indicating a duplicate connection.
+"""second_dir_behaviour - Behaviour for when a network name ends with
+a "2", usually indicating a duplicate connection.
 
 skip - skip the folder altogether
 none - treat the folder like any other network
@@ -30,6 +28,10 @@ merge - lololololololololo some day. TODO - cat files, merge+sort with
 existing files in actual network name? who knows.
 
 """
+DEFAULT_CONFIG = {
+    "second_dir_behaviour": "skip"
+}
+
 SECOND_DIR_BEHAVIOUR="skip"
 
 def sync_files(remote_host):
@@ -77,6 +79,9 @@ def get_files(work_dir, backup_dir):
     return file_list
 
 def clean_files(remote_host, user, file_list, now):
+    if not file_list:
+        print "No files, not removing"
+        return
     today_suffix = "%s.log" % now.strftime("%Y-%m-%d")
     rm_cmd = ["rm"] + [ "irclogs/%s" % i for i in file_list if not i.endswith(today_suffix) ]
     full_files_cmd = [ "ssh", "%s@%s" % (user, remote_host), " ".join(rm_cmd) ]
@@ -95,8 +100,14 @@ def clean_files(remote_host, user, file_list, now):
 
 if __name__ == "__main__":
 
+    config = DEFAULT_CONFIG
+    with open("config.json") as config_f:
+
+        config.update(json.load(config_f))
+
+    # Create the date here to avoid race condition on day rollover
     the_now = datetime.datetime.now()
-    workdir=sync_files(HOST)
+    workdir=sync_files(config["host"])
     print "Backup dir is %s" % workdir
-    file_list = get_files(workdir, BACKUP_ROOT)
-    clean_files(HOST, USER, file_list, the_now)
+    file_list = get_files(workdir, config["backup_root"])
+    clean_files(config["host"], config["user"], file_list, the_now)

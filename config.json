@@ -1,0 +1,6 @@
+{
+    "user": "my_remote_user",
+    "host": "myirc.example.com",
+    "backup_root": "/home/user/mybackups/",
+    "second_dir_behaviour": "skip"
+}
