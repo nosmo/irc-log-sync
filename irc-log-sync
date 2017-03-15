@@ -79,11 +79,13 @@ def get_files(work_dir, backup_dir):
     return file_list
 
 def clean_files(remote_host, user, file_list, now):
-    if not file_list:
+    today_suffix = "%s.log" % now.strftime("%Y-%m-%d")
+    file_list_to_rm = [ "irclogs/%s" % i for i in file_list if not i.endswith(today_suffix) ]
+    if not file_list_to_rm:
         print "No files, not removing"
         return
-    today_suffix = "%s.log" % now.strftime("%Y-%m-%d")
-    rm_cmd = ["rm"] + [ "irclogs/%s" % i for i in file_list if not i.endswith(today_suffix) ]
+
+    rm_cmd = ["rm"] + file_list_to_rm
     full_files_cmd = [ "ssh", "%s@%s" % (user, remote_host), " ".join(rm_cmd) ]
 
     print full_files_cmd
