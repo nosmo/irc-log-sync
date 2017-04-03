@@ -10,8 +10,8 @@ Assumptions
 
 The script assumes an irssi-like logdir setup using 'autolog_path =
 "~/irclogs/$tag/$0.%Y-%m-%d.log";'. It moves files from the remote
-directory into a similar directory structure locally. Once synced emove all
-remote files but the logfile for the current day (or, worst case
+directory into a similar directory structure locally. Once synced, the script removes all
+remote files bar the logfile for the current day (or, worst case
 scenario, the current day and the day before assuming a change of day
 mid-sync).
 
