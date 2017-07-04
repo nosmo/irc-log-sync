@@ -11,7 +11,6 @@ mid-sync).
 
 """
 
-import argparse
 import datetime
 import glob
 import json
@@ -32,12 +31,12 @@ DEFAULT_CONFIG = {
     "second_dir_behaviour": "skip"
 }
 
-SECOND_DIR_BEHAVIOUR="skip"
+SECOND_DIR_BEHAVIOUR = "skip"
 
 def sync_files(remote_host):
-    workdir=tempfile.mkdtemp()
+    workdir = tempfile.mkdtemp()
 
-    rsync=subprocess.Popen(
+    rsync = subprocess.Popen(
         ["/usr/bin/rsync", "--progress", "--partial", "-rtv",
          "--rsh=ssh", "%s:irclogs" % remote_host, workdir],
         stdout=subprocess.PIPE,
@@ -75,7 +74,7 @@ def get_files(work_dir, backup_dir):
                 os.rename(os.path.join(log_dir, log_file),
                           os.path.join(backup_destination, log_file))
                 print "Moved %s:%s" % (network, log_file)
-                file_list.append(os.path.join(network,log_file))
+                file_list.append(os.path.join(network, log_file))
     return file_list
 
 def clean_files(remote_host, user, file_list, now):
@@ -109,7 +108,7 @@ if __name__ == "__main__":
 
     # Create the date here to avoid race condition on day rollover
     the_now = datetime.datetime.now()
-    workdir=sync_files(config["host"])
+    workdir = sync_files(config["host"])
     print "Backup dir is %s" % workdir
     file_list = get_files(workdir, config["backup_root"])
     clean_files(config["host"], config["user"], file_list, the_now)
